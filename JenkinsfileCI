@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Docker Image Build') {
             steps {
-                sh 'docker build sreejitheyne/rdcollection:3.8-slim -f dockerfile . '
+                sh 'docker build -t sreejitheyne/rdcollection:3.8-slim -f dockerfile . '
             }
         }
         stage('Push to Docker Hub'){
