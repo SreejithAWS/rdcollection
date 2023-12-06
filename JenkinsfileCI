@@ -21,5 +21,21 @@ pipeline {
                 sh 'python3 -m unittest discover'
             }
         }
+        stage('Docker Image Build') {
+            steps {
+                sh 'docker build sreejitheyne/rdcollection:3.8-slim -f dockerfile . '
+            }
+        }
+        stage('Push to Docker Hub'){
+            steps{
+                script {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpasswd')]) {
+                    sh "echo \$dockerhubpasswd | docker login --username sreejitheyne --password-stdin"
+                     }
+                     sh 'docker push  sreejitheyne/helloworld_node:latest'
+                 }
+            }
+        }
+
     }
 }
