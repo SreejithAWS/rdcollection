@@ -32,7 +32,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpasswd')]) {
                     sh "echo \$dockerhubpasswd | docker login --username sreejitheyne --password-stdin"
                      }
-                     sh 'docker push  sreejitheyne/helloworld_node:latest'
+                     sh 'docker push  sreejitheyne/rdcollection:3.8-slim'
                  }
             }
         }
