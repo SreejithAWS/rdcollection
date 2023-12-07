@@ -30,7 +30,7 @@ pipeline {
         }
         stage('Docker Image Build') {
             steps {
-                sh 'docker build -t ${DOCKER_IMAGE_NAME} -f Dockerfile . '
+                sh "docker build -t ${DOCKER_IMAGE_NAME} -f Dockerfile . "
             }
         }
         stage('Push to Docker Hub'){
@@ -39,15 +39,15 @@ pipeline {
                     withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpasswd')]) {
                     sh "echo \$dockerhubpasswd | docker login --username sreejitheyne --password-stdin"
                      }
-                     sh 'docker push ${DOCKER_IMAGE_NAME}'
+                     sh "docker push ${DOCKER_IMAGE_NAME}"
                  }
             }
         }
         stage('Deploy Image') {
             steps {
-                sh 'docker stop ${CONTAINER_NAME}' || true
-                sh 'docker rm ${CONTAINER_NAME}' || true
-                sh 'docker run -d --name ${CONTAINER_NAME} -p 8040:5000 ${DOCKER_IMAGE_NAME}'
+                sh "docker stop ${CONTAINER_NAME}' || true"
+                sh "docker rm ${CONTAINER_NAME}' || true"
+                sh "docker run -d --name ${CONTAINER_NAME} -p 8040:5000 ${DOCKER_IMAGE_NAME}"
             }
 
         }
