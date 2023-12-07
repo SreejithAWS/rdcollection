@@ -9,7 +9,8 @@ COPY . /app
 RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt \
+ && pip install openpyxl
 
 EXPOSE 5000
 
