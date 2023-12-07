@@ -3,6 +3,13 @@
 pipeline {
     agent any
 
+     environment {
+        // Define environment variables if needed
+        DOCKER_IMAGE_NAME = 'sreejitheyne/rdcollection:3.8-slim'
+        CONTAINER_NAME = 'rdcollection'
+     }
+
+
     stages {
         stage('Checkout') {
             steps {
@@ -23,7 +30,7 @@ pipeline {
         }
         stage('Docker Image Build') {
             steps {
-                sh 'docker build -t sreejitheyne/rdcollection:3.8-slim -f Dockerfile . '
+                sh 'docker build -t ${DOCKER_IMAGE_NAME} -f Dockerfile . '
             }
         }
         stage('Push to Docker Hub'){
@@ -32,9 +39,17 @@ pipeline {
                     withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhubpasswd')]) {
                     sh "echo \$dockerhubpasswd | docker login --username sreejitheyne --password-stdin"
                      }
-                     sh 'docker push  sreejitheyne/rdcollection:3.8-slim'
+                     sh 'docker push ${DOCKER_IMAGE_NAME}'
                  }
             }
+        }
+        stage('Deploy Image') {
+            steps {
+                sh 'docker stop ${CONTAINER_NAME}' || true
+                sh 'docker rm ${CONTAINER_NAME}' || true
+                sh 'docker run -d --name ${CONTAINER_NAME} -p 8040:5000 ${DOCKER_IMAGE_NAME}'
+            }
+
         }
 
     }
