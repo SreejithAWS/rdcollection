@@ -8,7 +8,7 @@ COPY . /app
 
 RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
-    pip install -r requirements.txt openpyxl Flask-SQLAlchemy
+    pip install -r requirements.txt 
  
 EXPOSE 5000
 
