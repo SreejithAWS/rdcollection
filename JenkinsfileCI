@@ -45,8 +45,8 @@ pipeline {
         }
         stage('Deploy Image') {
             steps {
-                sh "docker stop ${CONTAINER_NAME}' || true"
-                sh "docker rm ${CONTAINER_NAME}' || true"
+                sh "docker stop ${CONTAINER_NAME} || true"
+                sh "docker rm ${CONTAINER_NAME} || true"
                 sh "docker run -d --name ${CONTAINER_NAME} -p 8040:5000 ${DOCKER_IMAGE_NAME}"
             }
 
