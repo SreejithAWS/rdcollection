@@ -38,5 +38,6 @@ def view_data():
     return render_template('view_data.html', data=data)
 
 if __name__ == "__main__":
-    db.create_all()  # Create tables before running the app
+    with app.app_context():
+        db.create_all()  # Create tables before running the app
     app.run(debug=True, host='0.0.0.0', port=5000)
