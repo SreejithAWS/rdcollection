@@ -1,30 +1,21 @@
-# app.py
 from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
 import pandas as pd
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'  # Use SQLite for simplicity
+db = SQLAlchemy(app)
 
-class ExcelForm:
-    def __init__(self):
-        self.df = pd.DataFrame(columns=["Name", "Age", "Email"])
-
-    def save_data(self, name, age, email):
-        if not name or not age or not email:
-            return False
-
-        new_data = {"Name": name, "Age": age, "Email": email}
-        self.df = self.df.append(new_data, ignore_index=True)
-        self.df.to_excel("data.xlsx", index=False)
-        return True
-
-    def get_data(self):
-        return self.df
-
-excel_form = ExcelForm()
+class ExcelForm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    email = db.Column(db.String(120), nullable=False)
 
 @app.route('/')
 def index():
-    return render_template('index.html', data=excel_form.get_data())
+    data = ExcelForm.query.all()
+    return render_template('index.html', data=data)
 
 @app.route('/save', methods=['POST'])
 def save():
@@ -32,11 +23,20 @@ def save():
     age = request.form['age']
     email = request.form['email']
 
-    if excel_form.save_data(name, age, email):
-        return redirect(url_for('index'))
-    else:
+    if not name or not age or not email:
         return "Error: All fields must be filled."
 
-if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    new_data = ExcelForm(name=name, age=age, email=email)
+    db.session.add(new_data)
+    db.session.commit()
 
+    return redirect(url_for('index'))
+
+@app.route('/view_data')
+def view_data():
+    data = ExcelForm.query.all()
+    return render_template('view_data.html', data=data)
+
+if __name__ == "__main__":
+    db.create_all()  # Create tables before running the app
+    app.run(debug=True, host='0.0.0.0', port=5000)
